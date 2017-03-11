@@ -38,7 +38,7 @@ function compressLowRankMatrix{T<:Number}(A::Array{T, 2}, epsilon::Float64 )
     # function to compress into a low rank matrix
     (U, S,V) = svd(A)
     # computing the epsilon rank
-    epsRank = length(find(S.>0.1));
+    epsRank = length(find(S.>epsilon));
     return LowRankMatrix(U[:,1:epsRank], spdiagm(S[1:epsRank])*(V[:,1:epsRank])',
                          size(A)[1], size(A)[2], epsRank)
 end
@@ -51,7 +51,7 @@ function *{T<:Number}(M::LowRankMatrix{T}, v::Array{T,1})
     return M.U*c
 end
 function *{T<:Number}(M::LowRankMatrix{T}, N::Array{T,2})
-    # Matrix-Matrix product overload 
+    # Matrix-Matrix product overload
     @assert M.m == size(N)[1] # make sure vector is right size for matrix
     C = M.V*N
     return M.U*C
